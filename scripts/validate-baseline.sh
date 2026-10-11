@@ -5,7 +5,12 @@ set -euo pipefail
 required_files=(
   ".github/workflows/baseline.yml"
   ".gitignore"
+  ".markdownlint.json"
   "AGENTS.md"
+  "CONTRIBUTING.md"
+  "LICENSE"
+  "README.md"
+  "SECURITY.md"
   "docs/azure-canary-deployment.md"
   "host.json"
   "infra/main.bicep"

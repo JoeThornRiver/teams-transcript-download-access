@@ -26,6 +26,20 @@ jobs:
       - name: Validate required files and tracked-file hygiene
         run: ./scripts/validate-baseline.sh
 
+      - name: Lint Markdown
+        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
+        with:
+          config: .markdownlint.json
+          globs: |-
+            **/*.md
+
+      - name: Validate documentation links
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: --no-progress --verbose --accept 200,403,429 './**/*.md'
+          fail: true
+          token: ${{ github.token }}
+
       - name: Install production dependencies
         run: npm ci
 
