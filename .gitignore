@@ -1,0 +1,25 @@
+# Local agent review artifacts
+/work/reviews/
+
+# Environment and secret files
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Build, coverage, and dependency output
+/build/
+/dist/
+/coverage/
+/node_modules/
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~

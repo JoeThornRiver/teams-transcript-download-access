@@ -1,0 +1,51 @@
+name: Baseline
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Validate required files and tracked-file hygiene
+        run: ./scripts/validate-baseline.sh
+
+      - name: Install production dependencies
+        run: npm ci
+
+      - name: Check JavaScript syntax
+        run: npm run check
+
+      - name: Run unit and integration tests
+        run: npm test
+
+      - name: Compile Azure infrastructure
+        run: |-
+          az bicep build --file infra/main.bicep --outfile /tmp/recording-canary.json
+          az bicep build --file infra/tenant.bicep --outfile /tmp/tenant-lifecycle.json
+
+      - name: Validate compiled Azure infrastructure dependencies
+        run: node scripts/validate-infrastructure-template.mjs /tmp/recording-canary.json
+
+      - name: Scan for committed secrets
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITLEAKS_ENABLE_COMMENTS: false
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false
