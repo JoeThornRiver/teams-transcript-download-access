@@ -1,6 +1,11 @@
 {
   "name": "teams-transcript-download-access",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoeThornRiver/teams-transcript-download-access.git"
+  },
   "type": "module",
   "main": "src/functions/*.mjs",
   "engines": {
