@@ -46,3 +46,13 @@ test("Function telemetry disables dependency URL collection", async () => {
   const host = JSON.parse(await readFile(new URL("../host.json", import.meta.url), "utf8"));
   assert.equal(host.logging.applicationInsights.enableDependencyTracking, false);
 });
+
+test("immediate failure alert excludes transient Graph failures and duplicate wrappers", async () => {
+  const source = await readFile(new URL("../infra/main.bicep", import.meta.url), "utf8");
+  assert.match(source, /event == "canary-run-failed" and errorCode != "graph-request-failed"/);
+  assert.match(source, /event == "canary-invocation-failed" and phase != "canary-run"/);
+  assert.doesNotMatch(
+    source,
+    /event\) in \("canary-run-failed", "canary-invocation-failed"\)/,
+  );
+});

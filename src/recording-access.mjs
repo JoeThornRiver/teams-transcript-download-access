@@ -215,7 +215,12 @@ function createGraphClient({ accessToken, fetchImpl, graphBaseUrl }) {
       throw new Error("Microsoft Graph request failed before a response was received");
     }
     if (!response.ok) {
-      throw new Error(`Microsoft Graph request failed with HTTP ${response.status}`);
+      const graphError = await readGraphError(response);
+      const error = new Error(`Microsoft Graph request failed with HTTP ${response.status}`);
+      error.graphHttpStatus = response.status;
+      error.graphErrorCode = graphError.code;
+      error.graphErrorMessage = graphError.message;
+      throw error;
     }
     if (response.status === 204) return undefined;
     return response.json();
@@ -236,6 +241,32 @@ function createGraphClient({ accessToken, fetchImpl, graphBaseUrl }) {
       return values;
     },
     post: (path, body) => request("POST", path, body),
+  };
+}
+
+async function readGraphError(response) {
+  let body;
+  try {
+    body = await response.json();
+  } catch {
+    return { code: "unknown", message: "unknown" };
+  }
+  const code = body?.error?.code;
+  const message = body?.error?.message;
+  const sanitizedMessage = typeof message === "string"
+    ? message
+        .replace(/[\u0000-\u001F\u007F-\u009F]/g, " ")
+        .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "[redacted]")
+        .replace(/\b[A-Za-z][A-Za-z0-9+.-]*:\/\/[^\s]+/g, "[redacted]")
+        .replace(/\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi, "[redacted]")
+        .trim()
+        .slice(0, 300)
+    : "";
+  return {
+    code: typeof code === "string" && /^[A-Za-z0-9._-]{1,100}$/.test(code)
+      ? code
+      : "unknown",
+    message: sanitizedMessage || "unknown",
   };
 }
 

@@ -257,7 +257,7 @@ resource failureAlert 'Microsoft.Insights/scheduledQueryRules@2023-12-01' = {
       allOf: [
         {
           operator: 'GreaterThan'
-          query: 'traces | where tostring(parse_json(message).event) in ("canary-run-failed", "canary-invocation-failed")'
+          query: 'traces | extend payload = parse_json(message) | extend event = tostring(payload.event), errorCode = tostring(payload.errorCode), phase = tostring(payload.phase) | where (event == "canary-run-failed" and errorCode != "graph-request-failed") or (event == "canary-invocation-failed" and phase != "canary-run")'
           threshold: 0
           timeAggregation: 'Count'
         }
