@@ -208,6 +208,13 @@ for (const [scenario, expectedErrorCode] of [
             graphHttpStatus: 503,
           }
         : {}),
+      ...(scenario === "invite"
+        ? {
+            graphErrorCode: "unknown",
+            graphErrorMessage: "unknown",
+            graphHttpStatus: 503,
+          }
+        : {}),
       phase: scenario === "watermark-write" ? "watermark-write" : "discovery",
     });
     assertSanitized(telemetry);

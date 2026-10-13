@@ -111,6 +111,35 @@ test("Graph failures never include untrusted response header content", async () 
   );
 });
 
+test("Graph failures expose only sanitized response diagnostics", async () => {
+  await assert.rejects(
+    () =>
+      grantRecordingReadAccess({
+        ...baseOptions({
+          baseUrl: "https://graph.test/v1.0",
+          fetchImpl: async () =>
+            json(503, {
+              error: {
+                code: "serviceNotAvailable",
+                message:
+                  "Failed for participant@example.test at https://tenant.example/recording " +
+                  "with id 01234567-89ab-cdef-0123-456789abcdef",
+              },
+            }),
+        }),
+      }),
+    (error) => {
+      assert.equal(error.graphHttpStatus, 503);
+      assert.equal(error.graphErrorCode, "serviceNotAvailable");
+      assert.equal(
+        error.graphErrorMessage,
+        "Failed for [redacted] at [redacted] with id [redacted]",
+      );
+      return true;
+    },
+  );
+});
+
 function baseOptions(fixture) {
   return {
     accessToken: "test-token-must-never-be-returned",
