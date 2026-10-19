@@ -74,6 +74,8 @@ The preview reports only counts by change type, never Azure resource payloads or
 
 Completion means the technical deployment passed. Scheduled runtime failures are reported by the deployed Azure Monitor alerts.
 
+Scheduled discovery rechecks the previous 24 hours to tolerate eventual Microsoft Search indexing. Microsoft publishes no maximum indexing delay, so recordings indexed later can still be missed.
+
 ## Live recording validation
 
 After installation, create one private, non-channel Teams meeting recording with an eligible existing recipient. Verify after a scheduled run that the recipient receives direct read access, download is allowed, no invitation email is sent, and generated sharing links are unchanged. A second scheduled run must not create a duplicate permission.

@@ -47,7 +47,7 @@ param maxLookbackDays int = 14
 
 @description('Overlap used to tolerate Microsoft Search indexing delay.')
 @minValue(1)
-param searchIndexOverlapMinutes int = 30
+param searchIndexOverlapMinutes int = 1440
 
 @description('Microsoft Search page size.')
 @minValue(1)
