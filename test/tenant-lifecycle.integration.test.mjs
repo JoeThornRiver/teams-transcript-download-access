@@ -14,7 +14,7 @@ test("tenant lifecycle exposes only the supported install and uninstall inputs",
   const lifecycle = `${common}\n${install}`;
   for (const prompt of ["Deployment name", "Azure subscription", "Azure region", "Microsoft Search region", "Alert email address"])
     assert.match(lifecycle, new RegExp(prompt));
-  for (const fixed of ["0 */5 * * * *", "14", "30", "100"])
+  for (const fixed of ["0 */5 * * * *", "14", "1440", "100"])
     assert.equal(install.includes(fixed), true, `missing fixed operational value: ${fixed}`);
   assert.match(lifecycle, /Files\.ReadWrite\.All/);
   assert.doesNotMatch(lifecycle, /User\.Read\.All/);
@@ -231,7 +231,7 @@ elif has 'emailReceivers' && has 'status'; then
   fi
 elif has 'action-group show'; then echo true
 elif has 'functionapp config appsettings list'; then
-  has 'CANARY_TIMER_SCHEDULE' && echo '0 */5 * * * *' || { has 'MAX_LOOKBACK_DAYS' && echo 14 || { has 'SEARCH_INDEX_OVERLAP_MINUTES' && echo 30 || echo 100; }; }
+  has 'CANARY_TIMER_SCHEDULE' && echo '0 */5 * * * *' || { has 'MAX_LOOKBACK_DAYS' && echo 14 || { has 'SEARCH_INDEX_OVERLAP_MINUTES' && echo 1440 || echo 100; }; }
 elif has 'functionapp show'; then echo Running
 elif has 'functionapp function list'; then echo 1
 elif has 'functionapp list' && has 'length('; then echo 1

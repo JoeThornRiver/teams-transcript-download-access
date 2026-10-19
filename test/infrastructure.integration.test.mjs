@@ -23,6 +23,7 @@ test("Bicep defines the isolated secretless canary resources and mandatory alert
     "emailAddress: alertEmailAddress",
     "managedIdentityPrincipalId",
     "name: watermarkContainerName",
+    "param searchIndexOverlapMinutes int = 1440",
   ]) {
     assert.equal(source.includes(required), true, `missing infrastructure declaration: ${required}`);
   }

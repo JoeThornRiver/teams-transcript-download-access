@@ -63,7 +63,7 @@ for ((attempt=1; attempt<=12; attempt++)); do
 done
 [[ "$FUNCTION_STATE" == 'Running' ]] || fail 'The Function App is not running.'
 [[ "$(az_value 'Function registration verification' functionapp function list --resource-group "$RESOURCE_GROUP" --name "$FUNCTION_APP_NAME" --query 'length(@)' -o tsv)" == '1' ]] || fail 'Exactly one timer Function must be registered.'
-for setting in 'CANARY_TIMER_SCHEDULE=0 */5 * * * *' 'MAX_LOOKBACK_DAYS=14' 'SEARCH_INDEX_OVERLAP_MINUTES=30' 'SEARCH_PAGE_SIZE=100'; do
+for setting in 'CANARY_TIMER_SCHEDULE=0 */5 * * * *' 'MAX_LOOKBACK_DAYS=14' 'SEARCH_INDEX_OVERLAP_MINUTES=1440' 'SEARCH_PAGE_SIZE=100'; do
   name="${setting%%=*}"; value="${setting#*=}"
   [[ "$(az_value 'Function setting verification' functionapp config appsettings list --resource-group "$RESOURCE_GROUP" --name "$FUNCTION_APP_NAME" --query "[?name=='$name'].value | [0]" -o tsv)" == "$value" ]] || fail "Unexpected ${name} setting."
 done
